@@ -68,7 +68,7 @@ async def validate_link(
         del links[token]
         raise LinkExpiredHTTPException()
 
-    if client_ip != link_data.user_ip:
+    if client_ip not in [link_data.user_ip, link_data.device_ip]:
         raise AccessDeniedHTTPException()
 
     del links[token]
