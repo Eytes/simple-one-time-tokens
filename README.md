@@ -60,7 +60,7 @@ HTTP_HOST_URL="http://localhost"
 LINK_TTL="0:00:30" # 30 sec
 ```
 
-### 3.Запуск сервиса
+### 3. Запуск сервиса
 
 ```shell
 docker-compose up --build
