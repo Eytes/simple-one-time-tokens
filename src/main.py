@@ -16,5 +16,5 @@ app.include_router(
 )
 app.include_router(
     health.router,
-    tags=["health"],
+    tags=["Health"],
 )
