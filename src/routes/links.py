@@ -46,7 +46,7 @@ async def create_link(
     )
 
     return LinkCreateResponse(
-        link=f"{settings.http_host_url}/{router.prefix}/links/{api_token}",
+        link=f"{settings.http_host_url}/{settings.api_v1_prefix}/links/{api_token}",
         expires_at=expires_at,
     )
 
