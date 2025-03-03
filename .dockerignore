@@ -1,0 +1,8 @@
+**/.idea/
+**/.vscode/
+**/.git*
+**/__pycache__/
+**/.venv/
+.env.example
+README.md
+Dockerfile
