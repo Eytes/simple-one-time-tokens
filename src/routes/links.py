@@ -37,7 +37,7 @@ async def create_link(
         raise AccessDeniedHTTPException()
 
     api_token = secrets.token_urlsafe(16)
-    expires_at = datetime.now(UTC) + settings.link_ttl
+    expires_at = datetime.now(UTC) + settings.link_ttl_seconds
 
     links[api_token] = LinkData(
         user_ip=str(data.user_ip),

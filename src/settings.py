@@ -11,14 +11,14 @@ class Settings(BaseModel):
     **Атрибуты:**
     - `trusted_ips`: Список доверенных IP-адресов, получаемых из переменной окружения `TRUSTED_IPS`. Эти IP-адреса разрешены для выполнения операций с сервисом.
     - `http_host_url`: URL хоста сервиса, который извлекается из переменной окружения `HTTP_HOST_URL`. Используется для формирования ссылок и настройки подключения.
-    - `link_ttl`: Время жизни ссылки (TTL), установленное с помощью переменной окружения или по умолчанию равное 30 сек. Определяет, сколько времени будет действительна одноразовая ссылка после ее создания.
+    - `link_ttl_seconds`: Время жизни ссылки (TTL), установленное с помощью переменной окружения или по умолчанию равное 30 сек. Определяет, сколько времени будет действительна одноразовая ссылка после ее создания.
     """
 
     trusted_ips: list[IPvAnyAddress] = list(
         set(os.getenv("TRUSTED_IPS", "").split(","))
     )
     http_host_url: HttpUrl = os.getenv("HTTP_HOST_URL")
-    link_ttl: datetime = os.getenv("LINK_TTL") or timedelta(seconds=30)
+    link_ttl_seconds: datetime = timedelta(seconds=int(os.getenv("LINK_TTL_SECONDS", default=30)))
     api_v1_prefix: str = "/api/v1"
 
 
