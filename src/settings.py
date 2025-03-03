@@ -18,7 +18,9 @@ class Settings(BaseModel):
         set(os.getenv("TRUSTED_IPS", "").split(","))
     )
     http_host_url: HttpUrl = os.getenv("HTTP_HOST_URL")
-    link_ttl_seconds: datetime = timedelta(seconds=int(os.getenv("LINK_TTL_SECONDS", default=30)))
+    link_ttl_seconds: datetime = timedelta(
+        seconds=int(os.getenv("LINK_TTL_SECONDS", default=30))
+    )
     api_v1_prefix: str = "/api/v1"
 
 
