@@ -14,7 +14,6 @@ class LinkCreateResponse(BaseModel):
     """Схема ответа при создании ссылки."""
 
     link: str
-    expires_at: datetime
 
 
 class LinkValidationResponse(BaseModel):

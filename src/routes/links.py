@@ -45,10 +45,7 @@ async def create_link(
         expires_at=expires_at,
     )
 
-    return LinkCreateResponse(
-        link=f"{settings.http_host_url + settings.api_v1_prefix}/links/{api_token}",
-        expires_at=expires_at,
-    )
+    return LinkCreateResponse(link=f"{settings.http_host_url + settings.api_v1_prefix}/links/{api_token}")
 
 
 @router.get(
@@ -67,7 +64,7 @@ async def validate_link(
     if not link_data:
         raise LinkNotFoundHTTPException()
 
-    if datetime.now(UTC) > link_data["expires_at"]:
+    if datetime.now(UTC) > link_data.expires_at:
         del links[token]
         raise LinkExpiredHTTPException()
 
