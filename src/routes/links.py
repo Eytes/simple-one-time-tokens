@@ -4,17 +4,17 @@ from fastapi import APIRouter, status, Depends
 from datetime import datetime, UTC
 import secrets
 
-from ..dependencies.get_client_ip import get_client_ip
-from ..settings import settings
-from ..schemas.link import (
+from dependencies.get_client_ip import get_client_ip
+from settings import settings
+from schemas.link import (
     LinkCreateRequest,
     LinkCreateResponse,
     LinkValidationResponse,
     LinkData,
 )
-from ..exceptions.links import LinkNotFoundHTTPException, LinkExpiredHTTPException
-from ..exceptions.access import AccessDeniedHTTPException
-from ..docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
+from exceptions.links import LinkNotFoundHTTPException, LinkExpiredHTTPException
+from exceptions.access import AccessDeniedHTTPException
+from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
 
 router = APIRouter()
 

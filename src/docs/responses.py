@@ -1,5 +1,5 @@
 from fastapi import status
-from ..schemas.link import LinkCreateResponse, LinkValidationResponse
+from schemas.link import LinkCreateResponse, LinkValidationResponse
 
 CREATE_LINK_RESPONSES = {
     status.HTTP_201_CREATED: {
