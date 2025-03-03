@@ -44,7 +44,7 @@
 Для начала вам нужно клонировать репозиторий:
 
 ```shell
-git clone https://github.com/your-username/one-time-links-api.git
+git clone https://github.com/Eytes/simple-one-time-links.git
 cd one-time-links-api
 ```
 
