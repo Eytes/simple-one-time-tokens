@@ -5,9 +5,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from dependencies.get_client_ip import get_client_ip
-from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
+from docs.responses import CREATE_TOKEN_RESPONSES, VALIDATE_TOKEN_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
-from exceptions.links import LinkExpiredHTTPException, LinkNotFoundHTTPException
+from exceptions.tokens import TokenExpiredHTTPException, TokenNotFoundHTTPException
 from schemas.token import (
     TokenCreateRequest,
     TokenCreateResponse,
@@ -26,7 +26,7 @@ tokens: dict[str, TokenData] = {}
     path="/create",
     response_model=TokenCreateResponse,
     status_code=status.HTTP_201_CREATED,
-    responses=CREATE_LINK_RESPONSES,
+    responses=CREATE_TOKEN_RESPONSES,
 )
 async def create_token(
     data: TokenCreateRequest,
@@ -41,7 +41,7 @@ async def create_token(
     tokens[api_token] = TokenData(
         user_ip=str(data.user_ip),
         device_ip=str(data.device_ip),
-        expires_at=datetime.now(UTC) + settings.link_ttl_seconds,
+        expires_at=datetime.now(UTC) + settings.token_ttl_seconds,
     )
 
     return TokenCreateResponse(token=api_token)
@@ -51,7 +51,7 @@ async def create_token(
     path="/validate",
     response_model=TokenValidationResponse,
     status_code=status.HTTP_200_OK,
-    responses=VALIDATE_LINK_RESPONSES,
+    responses=VALIDATE_TOKEN_RESPONSES,
 )
 async def validate_token(
     token: str,
@@ -61,11 +61,11 @@ async def validate_token(
     token_data = tokens.get(token)
 
     if not token_data:
-        raise LinkNotFoundHTTPException()
+        raise TokenNotFoundHTTPException()
 
     if datetime.now(UTC) > token_data.expires_at:
         del tokens[token]
-        raise LinkExpiredHTTPException()
+        raise TokenExpiredHTTPException()
 
     if client_ip not in [token_data.user_ip, token_data.device_ip]:
         raise AccessDeniedHTTPException()

@@ -1,0 +1,15 @@
+from fastapi import HTTPException, status
+
+
+class TokenNotFoundHTTPException(HTTPException):
+    """Исключение, когда ссылка не найдена (404)."""
+
+    def __init__(self):
+        super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail="Token not found")
+
+
+class TokenExpiredHTTPException(HTTPException):
+    """Исключение, когда ссылка истекла (410)."""
+
+    def __init__(self):
+        super().__init__(status_code=status.HTTP_410_GONE, detail="Token expired")
