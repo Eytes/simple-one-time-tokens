@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, status
 from dependencies.get_client_ip import get_client_ip
 from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
-from exceptions.links import LinkExpiredHTTPException, LinkNotFoundHTTPException
 from schemas.token import (
     TokenCreateRequest,
     TokenCreateResponse,
@@ -30,12 +29,9 @@ tokens: dict[str, TokenData] = {}
 )
 async def create_token(
     data: TokenCreateRequest,
-    client_ip: Annotated[str, Depends(get_client_ip)],
+    trusted_ip: Annotated[str, Depends(is_trusted_ip)],
 ):
-    """Создает одноразовую ссылку, если запрос поступает от доверенного IP."""
-    if client_ip not in settings.trusted_ips:
-        raise AccessDeniedHTTPException()
-
+    """Создает одноразовый токен, если запрос поступает от доверенного IP."""
     api_token = secrets.token_urlsafe(16)
 
     tokens[api_token] = TokenData(

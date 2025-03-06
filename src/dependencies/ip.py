@@ -1,4 +1,8 @@
-from fastapi import Request
+from fastapi import Depends, Request
+from typing_extensions import Annotated
+
+from exceptions.access import AccessDeniedHTTPException
+from settings import settings
 
 
 def get_client_ip(request: Request) -> str:
@@ -14,3 +18,10 @@ def get_client_ip(request: Request) -> str:
     Используется для получения IP-адреса клиента, который отправил запрос, что полезно для проверки и авторизации доступа, а также для логирования.
     """
     return request.client.host
+
+
+def is_trusted_ip(ip: Annotated[str, Depends(get_client_ip)]) -> str:
+    """Проверка, что ip адрес является доверенным"""
+    if ip not in settings.trusted_ips:
+        raise AccessDeniedHTTPException()
+    return ip
