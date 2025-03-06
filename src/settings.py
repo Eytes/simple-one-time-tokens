@@ -16,10 +16,11 @@ class Settings(BaseModel):
 
     trusted_ips: list[IPvAnyAddress] = list(
         set(os.getenv("TRUSTED_IPS", "").split(","))
-    )
+    ) + ["127.0.0.1"]
     link_ttl_seconds: datetime = timedelta(
         seconds=int(os.getenv("LINK_TTL_SECONDS", default=30))
     )
+    cleanup_interval: int = os.getenv("CLEANUP_INTERVAL", default=10)
     api_v1_prefix: str = "/api/v1"
 
 
