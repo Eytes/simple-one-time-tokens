@@ -66,5 +66,4 @@ CLEANUP_INTERVAL=10
 docker-compose up --build
 ```
 
-Теперь сервис будет доступен по адресу http://localhost
-Документация http://localhost/api/docs.
+Теперь документация сервиса будет доступна по адресу http://localhost:8080/api/docs
