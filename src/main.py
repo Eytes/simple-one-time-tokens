@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from dependencies.cleanup_expired_tokens import cleanup_expired_tokens
+from dependencies.tokens import cleanup_expired_tokens
 from routes import health, tokens
 from settings import settings
 

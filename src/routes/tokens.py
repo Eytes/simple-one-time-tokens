@@ -4,6 +4,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from db.tokens import TOKENS
+from dependencies.ip import get_client_ip, is_trusted_ip
+from dependencies.tokens import token_validate
+from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
 from dependencies.get_client_ip import get_client_ip
 from docs.responses import CREATE_TOKEN_RESPONSES, VALIDATE_TOKEN_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
@@ -18,9 +22,6 @@ from settings import settings
 
 router = APIRouter()
 
-# Временное хранилище ссылок
-tokens: dict[str, TokenData] = {}
-
 
 @router.post(
     path="/create",
@@ -30,15 +31,12 @@ tokens: dict[str, TokenData] = {}
 )
 async def create_token(
     data: TokenCreateRequest,
-    client_ip: Annotated[str, Depends(get_client_ip)],
+    trusted_ip: Annotated[str, Depends(is_trusted_ip)],
 ):
-    """Создает одноразовую ссылку, если запрос поступает от доверенного IP."""
-    if client_ip not in settings.trusted_ips:
-        raise AccessDeniedHTTPException()
-
+    """Создает одноразовый токен, если запрос поступает от доверенного IP."""
     api_token = secrets.token_urlsafe(16)
 
-    tokens[api_token] = TokenData(
+    TOKENS[api_token] = TokenData(
         user_ip=str(data.user_ip),
         device_ip=str(data.device_ip),
         expires_at=datetime.now(UTC) + settings.token_ttl_seconds,
@@ -54,7 +52,7 @@ async def create_token(
     responses=VALIDATE_TOKEN_RESPONSES,
 )
 async def validate_token(
-    token: str,
+    token: Annotated[str, Depends(token_validate)],
     client_ip: Annotated[str, Depends(get_client_ip)],
 ):
     """Проверяет валидность одноразовой ссылки и удаляет ее при успешном использовании."""
@@ -67,8 +65,14 @@ async def validate_token(
         del tokens[token]
         raise TokenExpiredHTTPException()
 
+    token_data = TOKENS.get(token)
     if client_ip not in [token_data.user_ip, token_data.device_ip]:
         raise AccessDeniedHTTPException()
 
-    del tokens[token]
+    del TOKENS[token]
     return TokenValidationResponse()
+
+
+@router.get(path="/get")
+def get_tokens():
+    return TOKENS
