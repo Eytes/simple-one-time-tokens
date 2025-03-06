@@ -4,6 +4,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from db.tokens import TOKENS
+from dependencies.ip import get_client_ip, is_trusted_ip
+from dependencies.tokens import token_validate
 from dependencies.get_client_ip import get_client_ip
 from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
@@ -16,9 +19,6 @@ from schemas.token import (
 from settings import settings
 
 router = APIRouter()
-
-# Временное хранилище ссылок
-tokens: dict[str, TokenData] = {}
 
 
 @router.post(
@@ -34,7 +34,7 @@ async def create_token(
     """Создает одноразовый токен, если запрос поступает от доверенного IP."""
     api_token = secrets.token_urlsafe(16)
 
-    tokens[api_token] = TokenData(
+    TOKENS[api_token] = TokenData(
         user_ip=str(data.user_ip),
         device_ip=str(data.device_ip),
         expires_at=datetime.now(UTC) + settings.link_ttl_seconds,
@@ -50,26 +50,18 @@ async def create_token(
     responses=VALIDATE_LINK_RESPONSES,
 )
 async def validate_token(
-    token: str,
+    token: Annotated[str, Depends(token_validate)],
     client_ip: Annotated[str, Depends(get_client_ip)],
 ):
     """Проверяет валидность одноразовой ссылки и удаляет ее при успешном использовании."""
-    token_data = tokens.get(token)
-
-    if not token_data:
-        raise LinkNotFoundHTTPException()
-
-    if datetime.now(UTC) > token_data.expires_at:
-        del tokens[token]
-        raise LinkExpiredHTTPException()
-
+    token_data = TOKENS.get(token)
     if client_ip not in [token_data.user_ip, token_data.device_ip]:
         raise AccessDeniedHTTPException()
 
-    del tokens[token]
+    del TOKENS[token]
     return TokenValidationResponse()
 
 
 @router.get(path="/get")
 def get_tokens():
-    return tokens
+    return TOKENS
