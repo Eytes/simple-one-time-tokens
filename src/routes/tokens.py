@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, status
 from db.tokens import TOKENS
 from dependencies.ip import get_client_ip, is_trusted_ip
 from dependencies.tokens import token_validate
-from dependencies.get_client_ip import get_client_ip
 from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
 from schemas.token import (
