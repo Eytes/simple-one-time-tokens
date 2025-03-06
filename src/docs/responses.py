@@ -19,7 +19,7 @@ CREATE_TOKEN_RESPONSES = {
 
 VALIDATE_TOKEN_RESPONSES = {
     status.HTTP_200_OK: {
-        "description": "Токен успешно валидирована",
+        "description": "Токен успешно проверен",
         "model": TokenValidationResponse,
     },
     status.HTTP_404_NOT_FOUND: {
