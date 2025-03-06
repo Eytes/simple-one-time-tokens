@@ -56,8 +56,8 @@ cd one-time-links-api
 
 ```shell
 TRUSTED_IPS="192.168.1.1,192.168.1.2"
-HTTP_HOST_URL="http://localhost:8080"
 LINK_TTL_SECONDS=30
+CLEANUP_INTERVAL=10
 ```
 
 ### 3. Запуск сервиса
