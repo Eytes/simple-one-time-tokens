@@ -7,11 +7,8 @@ from fastapi import APIRouter, Depends, status
 from db.tokens import TOKENS
 from dependencies.ip import get_client_ip, is_trusted_ip
 from dependencies.tokens import token_validate
-from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
-from dependencies.get_client_ip import get_client_ip
 from docs.responses import CREATE_TOKEN_RESPONSES, VALIDATE_TOKEN_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
-from exceptions.tokens import TokenExpiredHTTPException, TokenNotFoundHTTPException
 from schemas.token import (
     TokenCreateRequest,
     TokenCreateResponse,
@@ -56,15 +53,6 @@ async def validate_token(
     client_ip: Annotated[str, Depends(get_client_ip)],
 ):
     """Проверяет валидность одноразовой ссылки и удаляет ее при успешном использовании."""
-    token_data = tokens.get(token)
-
-    if not token_data:
-        raise TokenNotFoundHTTPException()
-
-    if datetime.now(UTC) > token_data.expires_at:
-        del tokens[token]
-        raise TokenExpiredHTTPException()
-
     token_data = TOKENS.get(token)
     if client_ip not in [token_data.user_ip, token_data.device_ip]:
         raise AccessDeniedHTTPException()
