@@ -3,7 +3,7 @@ import logging
 from datetime import UTC, datetime
 
 from db.tokens import TOKENS  # Импорт временного хранилища ссылок
-from exceptions.links import LinkExpiredHTTPException, LinkNotFoundHTTPException
+from exceptions.tokens import TokenExpiredHTTPException, TokenNotFoundHTTPException
 from settings import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -35,10 +35,10 @@ async def cleanup_expired_tokens(interval: int = settings.cleanup_interval) -> N
 def token_validate(token: str) -> str:
     token_data = TOKENS.get(token)
     if not token_data:
-        raise LinkNotFoundHTTPException()
+        raise TokenNotFoundHTTPException()
 
     if datetime.now(UTC) > token_data.expires_at:
         del TOKENS[token]
-        raise LinkExpiredHTTPException()
+        raise TokenExpiredHTTPException()
 
     return token
