@@ -1,29 +1,30 @@
-from pydantic import BaseModel, IPvAnyAddress
 from datetime import datetime
 from typing import Literal
 
+from pydantic import BaseModel, IPvAnyAddress
 
-class LinkCreateRequest(BaseModel):
+
+class TokenCreateRequest(BaseModel):
     """Схема запроса на создание одноразовой ссылки."""
 
     user_ip: IPvAnyAddress
     device_ip: IPvAnyAddress
 
 
-class LinkCreateResponse(BaseModel):
+class TokenCreateResponse(BaseModel):
     """Схема ответа при создании ссылки."""
 
-    link: str
+    token: str
 
 
-class LinkValidationResponse(BaseModel):
+class TokenValidationResponse(BaseModel):
     """Схема успешного ответа при валидации ссылки."""
 
-    status: Literal["success"]
-    message: str
+    status: Literal["success"] = "success"
+    message: str = "Token validated successfully"
 
 
-class LinkData(BaseModel):
+class TokenData(BaseModel):
     """Схема данных об одноразовой ссылке"""
 
     user_ip: str

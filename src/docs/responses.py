@@ -1,10 +1,11 @@
 from fastapi import status
-from schemas.link import LinkCreateResponse, LinkValidationResponse
+
+from schemas.token import TokenCreateResponse, TokenValidationResponse
 
 CREATE_LINK_RESPONSES = {
     status.HTTP_201_CREATED: {
         "description": "Ссылка успешно создана",
-        "model": LinkCreateResponse,
+        "model": TokenCreateResponse,
     },
     status.HTTP_403_FORBIDDEN: {
         "description": "Доступ запрещен",
@@ -19,7 +20,7 @@ CREATE_LINK_RESPONSES = {
 VALIDATE_LINK_RESPONSES = {
     status.HTTP_200_OK: {
         "description": "Ссылка успешно валидирована",
-        "model": LinkValidationResponse,
+        "model": TokenValidationResponse,
     },
     status.HTTP_404_NOT_FOUND: {
         "description": "Ссылка не найдена",

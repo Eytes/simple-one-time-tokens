@@ -1,35 +1,35 @@
+import secrets
+from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, status, Depends
-from datetime import datetime, UTC
-import secrets
+from fastapi import APIRouter, Depends, status
 
 from dependencies.get_client_ip import get_client_ip
-from settings import settings
-from schemas.link import (
-    LinkCreateRequest,
-    LinkCreateResponse,
-    LinkValidationResponse,
-    LinkData,
-)
-from exceptions.links import LinkNotFoundHTTPException, LinkExpiredHTTPException
-from exceptions.access import AccessDeniedHTTPException
 from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
+from exceptions.access import AccessDeniedHTTPException
+from exceptions.links import LinkExpiredHTTPException, LinkNotFoundHTTPException
+from schemas.token import (
+    TokenCreateRequest,
+    TokenCreateResponse,
+    TokenData,
+    TokenValidationResponse,
+)
+from settings import settings
 
 router = APIRouter()
 
 # Временное хранилище ссылок
-links: dict[str, LinkData] = {}
+tokens: dict[str, TokenData] = {}
 
 
 @router.post(
-    "/",
-    response_model=LinkCreateResponse,
+    path="/create",
+    response_model=TokenCreateResponse,
     status_code=status.HTTP_201_CREATED,
     responses=CREATE_LINK_RESPONSES,
 )
-async def create_link(
-    data: LinkCreateRequest,
+async def create_token(
+    data: TokenCreateRequest,
     client_ip: Annotated[str, Depends(get_client_ip)],
 ):
     """Создает одноразовую ссылку, если запрос поступает от доверенного IP."""
@@ -37,42 +37,38 @@ async def create_link(
         raise AccessDeniedHTTPException()
 
     api_token = secrets.token_urlsafe(16)
-    expires_at = datetime.now(UTC) + settings.link_ttl_seconds
 
-    links[api_token] = LinkData(
+    tokens[api_token] = TokenData(
         user_ip=str(data.user_ip),
         device_ip=str(data.device_ip),
-        expires_at=expires_at,
+        expires_at=datetime.now(UTC) + settings.link_ttl_seconds,
     )
 
-    return LinkCreateResponse(link=f"{settings.http_host_url + settings.api_v1_prefix}/links/{api_token}")
+    return TokenCreateResponse(token=api_token)
 
 
-@router.get(
-    "/{token}",
-    response_model=LinkValidationResponse,
+@router.post(
+    path="/validate",
+    response_model=TokenValidationResponse,
     status_code=status.HTTP_200_OK,
     responses=VALIDATE_LINK_RESPONSES,
 )
-async def validate_link(
+async def validate_token(
     token: str,
     client_ip: Annotated[str, Depends(get_client_ip)],
 ):
     """Проверяет валидность одноразовой ссылки и удаляет ее при успешном использовании."""
-    link_data = links.get(token)
+    token_data = tokens.get(token)
 
-    if not link_data:
+    if not token_data:
         raise LinkNotFoundHTTPException()
 
-    if datetime.now(UTC) > link_data.expires_at:
-        del links[token]
+    if datetime.now(UTC) > token_data.expires_at:
+        del tokens[token]
         raise LinkExpiredHTTPException()
 
-    if client_ip not in [link_data.user_ip, link_data.device_ip]:
+    if client_ip not in [token_data.user_ip, token_data.device_ip]:
         raise AccessDeniedHTTPException()
 
-    del links[token]
-    return LinkValidationResponse(
-        status="success",
-        message="Link validated successfully",
-    )
+    del tokens[token]
+    return TokenValidationResponse()

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from routes import links, health
-from settings import settings
 
+from routes import health, tokens
+from settings import settings
 
 app = FastAPI(
     docs_url="/api/docs",
@@ -10,9 +10,9 @@ app = FastAPI(
 
 
 app.include_router(
-    links.router,
-    prefix=settings.api_v1_prefix + "/links",
-    tags=["Links"],
+    tokens.router,
+    prefix=settings.api_v1_prefix + "/token",
+    tags=["Token"],
 )
 app.include_router(
     health.router,

@@ -1,7 +1,7 @@
 import os
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 
-from pydantic import BaseModel, IPvAnyAddress, HttpUrl
+from pydantic import BaseModel, IPvAnyAddress
 
 
 class Settings(BaseModel):
@@ -17,7 +17,6 @@ class Settings(BaseModel):
     trusted_ips: list[IPvAnyAddress] = list(
         set(os.getenv("TRUSTED_IPS", "").split(","))
     )
-    http_host_url: HttpUrl = os.getenv("HTTP_HOST_URL")
     link_ttl_seconds: datetime = timedelta(
         seconds=int(os.getenv("LINK_TTL_SECONDS", default=30))
     )
