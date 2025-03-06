@@ -72,3 +72,8 @@ async def validate_token(
 
     del tokens[token]
     return TokenValidationResponse()
+
+
+@router.get(path="/get")
+def get_tokens():
+    return tokens
