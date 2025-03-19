@@ -52,7 +52,7 @@ async def validate_token(
     token: Annotated[str, Depends(token_validate)],
     client_ip: Annotated[str, Depends(get_client_ip)],
 ):
-    """Проверяет валидность одноразовой ссылки и удаляет ее при успешном использовании."""
+    """Проверяет валидность одноразового токена и удаляет его при успешной проверке."""
     token_data = TOKENS.get(token)
     if client_ip not in [token_data.user_ip, token_data.device_ip]:
         raise AccessDeniedHTTPException()
