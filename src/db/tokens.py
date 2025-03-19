@@ -1,4 +1,4 @@
 from schemas.token import TokenData
 
-# Временное хранилище ссылок
+# Временное хранилище токенов
 TOKENS: dict[str, TokenData] = {}
