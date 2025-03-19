@@ -20,7 +20,7 @@ class Settings(BaseModel):
     token_ttl_seconds: datetime = timedelta(
         seconds=int(os.getenv("TOKEN_TTL_SECONDS", default=30))
     )
-    cleanup_interval: int = os.getenv("CLEANUP_INTERVAL", default=10)
+    cleanup_interval: int = int(os.getenv("CLEANUP_INTERVAL", default=10))
     api_v1_prefix: str = "/api/v1"
 
 
