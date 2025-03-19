@@ -34,7 +34,7 @@ async def cleanup_expired_tokens(interval: int = settings.cleanup_interval) -> N
 
 def token_validate(token: str) -> str:
     token_data = TOKENS.get(token)
-    if not token_data:
+    if token_data is None:
         raise TokenNotFoundHTTPException()
 
     if datetime.now(UTC) > token_data.expires_at:
