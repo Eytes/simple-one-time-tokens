@@ -2,11 +2,11 @@ from fastapi import HTTPException, status
 
 
 class TokenNotFoundHTTPException(HTTPException):
-    """Исключение, когда ссылка не найдена (404)."""
+    """Исключение, когда токен не найден (401)."""
 
     def __init__(self):
         super().__init__(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Token not found"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token not found"
         )
 
 

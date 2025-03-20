@@ -22,7 +22,7 @@ VALIDATE_TOKEN_RESPONSES = {
         "description": "Токен успешно проверен",
         "model": TokenValidationResponse,
     },
-    status.HTTP_404_NOT_FOUND: {
+    status.HTTP_401_UNAUTHORIZED: {
         "description": "Токен не найден",
         "content": {
             "application/json": {
