@@ -55,7 +55,7 @@ async def validate_token(
 ):
     """Проверяет валидность одноразового токена и удаляет его при успешной проверке."""
     token_data = TOKENS.get(token)
-    if (device_ip != token_data.device_ip) and (user_ip != token_data.user_ip):
+    if (device_ip != token_data.device_ip) or (user_ip != token_data.user_ip):
         raise AccessDeniedHTTPException()
 
     del TOKENS[token]
