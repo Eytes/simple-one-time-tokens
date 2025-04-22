@@ -2,9 +2,9 @@ from fastapi import status
 
 from schemas.token import TokenCreateResponse, TokenValidationResponse
 
-CREATE_LINK_RESPONSES = {
+CREATE_TOKEN_RESPONSES = {
     status.HTTP_201_CREATED: {
-        "description": "Ссылка успешно создана",
+        "description": "Токен успешно создан",
         "model": TokenCreateResponse,
     },
     status.HTTP_403_FORBIDDEN: {
@@ -17,24 +17,24 @@ CREATE_LINK_RESPONSES = {
     },
 }
 
-VALIDATE_LINK_RESPONSES = {
+VALIDATE_TOKEN_RESPONSES = {
     status.HTTP_200_OK: {
-        "description": "Ссылка успешно валидирована",
+        "description": "Токен успешно проверен",
         "model": TokenValidationResponse,
     },
-    status.HTTP_404_NOT_FOUND: {
-        "description": "Ссылка не найдена",
+    status.HTTP_401_UNAUTHORIZED: {
+        "description": "Токен не найден",
         "content": {
             "application/json": {
-                "example": {"detail": "Link not found"},
+                "example": {"detail": "Token not found"},
             },
         },
     },
     status.HTTP_410_GONE: {
-        "description": "Срок действия ссылки истек",
+        "description": "Срок действия токена истек",
         "content": {
             "application/json": {
-                "example": {"detail": "Link expired"},
+                "example": {"detail": "Token expired"},
             },
         },
     },

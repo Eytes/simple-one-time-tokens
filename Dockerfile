@@ -30,4 +30,4 @@ COPY --chown=appuser:appgroup ./src ./
 EXPOSE 8080
 
 
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4", "--port", "8080"]
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

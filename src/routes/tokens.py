@@ -5,9 +5,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from db.tokens import TOKENS
-from dependencies.ip import get_client_ip, is_trusted_ip
+from dependencies.ip import get_requesters_ip, is_trusted_ip, get_user_ip
 from dependencies.tokens import token_validate
-from docs.responses import CREATE_LINK_RESPONSES, VALIDATE_LINK_RESPONSES
+from docs.responses import CREATE_TOKEN_RESPONSES, VALIDATE_TOKEN_RESPONSES
 from exceptions.access import AccessDeniedHTTPException
 from schemas.token import (
     TokenCreateRequest,
@@ -24,7 +24,7 @@ router = APIRouter()
     path="/create",
     response_model=TokenCreateResponse,
     status_code=status.HTTP_201_CREATED,
-    responses=CREATE_LINK_RESPONSES,
+    responses=CREATE_TOKEN_RESPONSES,
 )
 async def create_token(
     data: TokenCreateRequest,
@@ -36,7 +36,7 @@ async def create_token(
     TOKENS[api_token] = TokenData(
         user_ip=str(data.user_ip),
         device_ip=str(data.device_ip),
-        expires_at=datetime.now(UTC) + settings.link_ttl_seconds,
+        expires_at=datetime.now(UTC) + settings.token_ttl_seconds,
     )
 
     return TokenCreateResponse(token=api_token)
@@ -46,21 +46,17 @@ async def create_token(
     path="/validate",
     response_model=TokenValidationResponse,
     status_code=status.HTTP_200_OK,
-    responses=VALIDATE_LINK_RESPONSES,
+    responses=VALIDATE_TOKEN_RESPONSES,
 )
 async def validate_token(
     token: Annotated[str, Depends(token_validate)],
-    client_ip: Annotated[str, Depends(get_client_ip)],
+    device_ip: Annotated[str, Depends(get_requesters_ip)],
+    user_ip: Annotated[str, Depends(get_user_ip)],
 ):
-    """Проверяет валидность одноразовой ссылки и удаляет ее при успешном использовании."""
+    """Проверяет валидность одноразового токена и удаляет его при успешной проверке."""
     token_data = TOKENS.get(token)
-    if client_ip not in [token_data.user_ip, token_data.device_ip]:
+    if (device_ip != token_data.device_ip) or (user_ip != token_data.user_ip):
         raise AccessDeniedHTTPException()
 
     del TOKENS[token]
     return TokenValidationResponse()
-
-
-@router.get(path="/get")
-def get_tokens():
-    return TOKENS
