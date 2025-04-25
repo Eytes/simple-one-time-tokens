@@ -11,7 +11,7 @@ class TokenNotFoundHTTPException(HTTPException):
 
 
 class TokenExpiredHTTPException(HTTPException):
-    """Исключение, когда ссылка истекла (410)."""
+    """Исключение, когда токен истек (410)."""
 
     def __init__(self):
         super().__init__(status_code=status.HTTP_410_GONE, detail="Token expired")
