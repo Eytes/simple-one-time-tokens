@@ -16,7 +16,7 @@ class Settings(BaseModel):
 
     trusted_ips: list[IPvAnyAddress] = list(
         set(os.getenv("TRUSTED_IPS", "").split(","))
-    ) + ["127.0.0.1"]
+    )
     token_ttl_seconds: datetime = timedelta(
         seconds=int(os.getenv("TOKEN_TTL_SECONDS", default=30))
     )
