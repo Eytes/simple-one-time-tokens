@@ -25,7 +25,7 @@ class TokenValidationResponse(BaseModel):
 
 
 class TokenData(BaseModel):
-    """Схема данных об одноразовой ссылке"""
+    """Схема данных об одноразовом токене."""
 
     user_ip: str
     device_ip: str
