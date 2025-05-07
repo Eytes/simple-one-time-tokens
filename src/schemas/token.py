@@ -5,20 +5,20 @@ from pydantic import BaseModel, IPvAnyAddress
 
 
 class TokenCreateRequest(BaseModel):
-    """Схема запроса на создание одноразовой ссылки."""
+    """Схема запроса на создание одноразовой токена."""
 
     user_ip: IPvAnyAddress
     device_ip: IPvAnyAddress
 
 
 class TokenCreateResponse(BaseModel):
-    """Схема ответа при создании ссылки."""
+    """Схема ответа при создании токена."""
 
     token: str
 
 
 class TokenValidationResponse(BaseModel):
-    """Схема успешного ответа при валидации ссылки."""
+    """Схема успешного ответа при валидации токена."""
 
     status: Literal["success"] = "success"
     message: str = "Token validated successfully"
